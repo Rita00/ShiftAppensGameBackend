@@ -45,7 +45,6 @@ exports.validateCode = (req, res, next) => {
     const code = req.body.code;
     Challenge.findOne({ _id: idChallenge, availableCodes: { "$in": [code] } })
     .select('availableCodes').exec((error, challengeDocument) => {
-        console.log(challengeDocument);
         if (error) {
             res.status(400).json({
                 msg: ""
@@ -60,23 +59,15 @@ exports.validateCode = (req, res, next) => {
 
         User.findOne({ _id: req.userId, completedChallenges: { "$nin": [challengeDocument] } })
             .then(userDocument => {
-                console.log('aqui');
-                console.log(userDocument);
-                console.log(challengeDocument);
                 if (!userDocument) {
                     const error = new Error("Ação inválida");
                     throw error;
                 }
                 userDocument.completedChallenges.push(challengeDocument);
-                console.log('aqui2');
                 userDocument.totalPoints += challengeDocument.points;
-                console.log('aqui3');
                 challengeDocument.availableCodes.pull(code)
-                console.log('aqui4');
                 challengeDocument.save();
-                console.log('aqui5');
                 userDocument.save();
-                console.log('aqui6');
                 res.status(201).json({
                     msg: "Desafio concluído"
                 })
@@ -163,7 +154,6 @@ exports.getUserChallenges = (req, res, next) => {
 
 exports.getUserPoints = (req, res, next) => {
     const userID = req.userId;
-    console.log(userID)
     User.findById({ _id: userID })
         .then(userDocument => {
             
