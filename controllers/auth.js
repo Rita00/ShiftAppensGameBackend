@@ -44,7 +44,7 @@ exports.signup = (req, res, next) => {
         message: "Utilizador criado!",
         userId: createdUser._id.toString(),
         token: token,
-        expiresIn: 3600,
+        expiresIn: 3600 * 24,
         username: createdUser.username,
         isAdmin: createdUser.isAdmin
       });
@@ -81,7 +81,7 @@ exports.login = (req, res, next) => {
       res.status(200).json({
         token: token,
         userId: loadedUser._id.toString(),
-        expiresIn: 3600,
+        expiresIn: 3600 * 24,
         username: loadedUser.username,
         isAdmin: loadedUser.isAdmin
       });
