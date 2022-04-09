@@ -2,6 +2,7 @@ const Challenge = require("../models/challenge");
 const User = require("../models/user");
 const { v4: uuidv4 } = require('uuid');
 const { response } = require("express");
+const mongoose = require('mongoose');
 
 exports.getChallenges = (req, res, next) => {
     Challenge.find()
@@ -20,7 +21,10 @@ exports.getChallenges = (req, res, next) => {
 exports.createChallenge = (req, res, next) => {
     const title = req.body.title;
     const description = req.body.description;
-    const date = req.body.date;
+    let date = req.body.date;
+    if (date) {
+        date = new Date(date);
+    }
     const points = req.body.points;
     const newChallenge = new Challenge({
         title,
