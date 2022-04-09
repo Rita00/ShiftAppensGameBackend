@@ -21,9 +21,11 @@ exports.createChallenge = (req, res, next) => {
     const title = req.body.title;
     const description = req.body.description;
     const date = req.body.date;
+    const points = req.body.points;
     const newChallenge = new Challenge({
         title,
         description,
+        points,
         date
     })
 
