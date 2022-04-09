@@ -45,7 +45,8 @@ exports.signup = (req, res, next) => {
         userId: createdUser._id.toString(),
         token: token,
         expiresIn: 3600,
-        username: createdUser.username
+        username: createdUser.username,
+        isAdmin: createdUser.isAdmin
       });
     })
     .catch((err) => {
@@ -81,7 +82,8 @@ exports.login = (req, res, next) => {
         token: token,
         userId: loadedUser._id.toString(),
         expiresIn: 3600,
-        username: loadedUser.username
+        username: loadedUser.username,
+        isAdmin: loadedUser.isAdmin
       });
     })
     .catch((err) => {
