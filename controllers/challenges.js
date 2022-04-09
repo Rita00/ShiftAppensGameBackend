@@ -110,6 +110,7 @@ exports.generateCodes = (req, res, next) => {
 exports.createTextCode = (req, res, next) => {
     const idChallenge = req.body.idChallenge;
     const textCode = req.body.textCode;
+    const numTimes = req.body.numTimes;
     Challenge.findOne({_id: idChallenge})
     .select('availableCodes')
     .exec((error, challengeDocument) => {
@@ -124,7 +125,9 @@ exports.createTextCode = (req, res, next) => {
                 msg: "Código inválido"
             })
         }
-        challengeDocument.availableCodes.push(textCode);
+        for (let i = 0; i < numTimes; i++) {
+            challengeDocument.availableCodes.push(textCode);
+        }
         challengeDocument.save();
         res.status(201).json({
             msg: "Código gerado com sucesso"
