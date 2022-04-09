@@ -84,15 +84,12 @@ exports.generateCodes = (req, res, next) => {
     Challenge.findOne({ _id: idChallenge })
         .select('availableCodes')
         .exec((error, challengeDocument) => {
-            console.log(error);
-            console.log(challengeDocument);
             if (error) {
                 res.status(400).json({
                     msg: ""
                 })
                 return;
             }
-            console.log(challengeDocument)
             if (!challengeDocument) {
                 res.status(403).json({
                     msg: "Código inválido"
@@ -107,6 +104,31 @@ exports.generateCodes = (req, res, next) => {
             })
         })
 };
+
+exports.createTextCode = (req, res, next) => {
+    const idChallenge = req.body.idChallenge;
+    const textCode = req.body.textCode;
+    Challenge.findOne({_id: idChallenge})
+    .select('availableCodes')
+    .exec((error, challengeDocument) => {
+        if (error) {
+            res.status(400).json({
+                msg: ""
+            })
+            return;
+        }
+        if (!challengeDocument) {
+            res.status(403).json({
+                msg: "Código inválido"
+            })
+        }
+        challengeDocument.availableCodes.push(textCode);
+        challengeDocument.save();
+        res.status(201).json({
+            msg: "Código gerado com sucesso"
+        })
+    })
+}
 
 exports.getUserChallenges = (req, res, next) => {
     const userID = req.userId;
