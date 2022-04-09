@@ -16,6 +16,7 @@ function createJWT(email, userId, username) {
   );
 }
 
+// TODO verificar se username é unico
 exports.signup = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

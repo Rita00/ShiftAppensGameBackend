@@ -5,16 +5,16 @@ const { response } = require("express");
 
 exports.getChallenges = (req, res, next) => {
     Challenge.find()
-    .then(challengeDocuments => {
-        res.status(200).json({
-            challenges: challengeDocuments
+        .then(challengeDocuments => {
+            res.status(200).json({
+                challenges: challengeDocuments
+            })
         })
-    })
-    .catch(error => {
-        res.status(400).json({
-            msg: ""
+        .catch(error => {
+            res.status(400).json({
+                msg: ""
+            })
         })
-    })
 }
 
 exports.createChallenge = (req, res, next) => {
@@ -74,7 +74,7 @@ exports.validateCode = (req, res, next) => {
 exports.generateCodes = (req, res, next) => {
     const idChallenge = req.body.idChallenge;
     const ncodes = req.body.ncodes;
-    Challenge.findOne({ _id: idChallenge})
+    Challenge.findOne({ _id: idChallenge })
         .then((challengeDocument) => {
             if (!challengeDocument) {
                 const error = new Error("Código inválido");
@@ -96,5 +96,21 @@ exports.generateCodes = (req, res, next) => {
 };
 
 exports.getUserChallenges = (req, res, next) => {
-    
+    const userID = req.userId;
+    User.findById({ _id: userID })
+    .populate('completedChallenges')
+        .then(userDocument => {
+            if (!userDocument) {
+                const error = new Error("Utilizador inválido");
+                throw error;
+            }
+            res.status(200).json({
+                challenges: userDocument.completedChallenges
+            })
+        })
+        .catch(error => {
+            res.status(400).json({
+                msg: ""
+            })
+        })
 }
