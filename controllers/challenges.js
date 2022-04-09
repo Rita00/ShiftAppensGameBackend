@@ -39,25 +39,30 @@ exports.validateCode = (req, res, next) => {
             const error = new Error("Código inválido");
             throw error;
         }
-        User.findById(req.userId)
+        User.findOne({_id: req.userId, completedChallenges: {"$nin": [challengeDocument]}})
         .then(userDocument => {
             if (!userDocument) {
-                const error = new Error("Utilizador inexistente");
+                const error = new Error("Ação inválida");
                 throw error;
             }
-            userDocument.completeChallenges.push(challengeDocument);
+            userDocument.completedChallenges.push(challengeDocument);
             challengeDocument.availableCodes.pull(code)
             challengeDocument.save();
             userDocument.save();
             res.status(201).json({
                 msg: "Desafio concluído"
             })
-        })
-        User.findOne()
-        ;
+        }).catch(error => {
+            res.status(403).json({
+                msg: "Ação inválida"
+            })
+        });
+        
        console.log(challengeDocument);
     })
     .catch(error => {
-      console.log(error);
+        res.status(400).json({
+            msg: ""
+        })
     })
   };
