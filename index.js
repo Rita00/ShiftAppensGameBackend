@@ -5,6 +5,8 @@ const bodyParser = require('body-parser')
 const dotenv = require('dotenv')
 const challengeRoutes = require("./routes/challenges")
 const authRoutes = require("./routes/auth")
+const leaderboardRoutes = require("./routes/leaderboard")
+
 dotenv.config();
 dotenv.config({ path: `.env.${process.env.ENVIRONMENT}` });
 
@@ -14,6 +16,7 @@ app.use(cors())
 
 app.use("/challenges", challengeRoutes)
 app.use("/auth", authRoutes)
+app.use("/leaderboard", leaderboardRoutes)
 
 
 app.use((error, req, res, next) => {

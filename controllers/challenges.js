@@ -56,6 +56,7 @@ exports.validateCode = (req, res, next) => {
                         throw error;
                     }
                     userDocument.completedChallenges.push(challengeDocument);
+                    userDocument.totalPoints += challengeDocument.points;
                     challengeDocument.availableCodes.pull(code)
                     challengeDocument.save();
                     userDocument.save();

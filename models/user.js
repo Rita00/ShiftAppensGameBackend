@@ -7,6 +7,7 @@ const userSchema = new Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   isAdmin: {type: Boolean, default: false},
+  totalPoints: {type: Number, default: 0},
   completedChallenges: [
     {
       type: Schema.Types.ObjectId, 

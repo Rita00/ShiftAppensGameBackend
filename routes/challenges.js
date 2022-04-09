@@ -9,6 +9,6 @@ router.get('/', challengesController.getChallenges)
 router.post('/', challengesController.createChallenge)
 router.post('/validate', [isAuth], challengesController.validateCode)
 router.post('/generate', [isAuth, isAdmin], challengesController.generateCodes)
-router.get('/userChallenges', [isAuth], challengesController.getUserChallenges)
+router.get('/userchallenges', [isAuth], challengesController.getUserChallenges)
 
 module.exports = router;
