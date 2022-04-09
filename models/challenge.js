@@ -6,7 +6,7 @@ const challengeSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: false },
   date: { type: Date, default: Date.now },
-  availableCodes: [{ type: String}]
+  availableCodes: [{ type: String, select: false}]
 });
 
 module.exports = mongoose.model('Challenge', challengeSchema)

@@ -4,14 +4,16 @@ const { v4: uuidv4 } = require('uuid');
 const { response } = require("express");
 
 exports.getChallenges = (req, res, next) => {
-    res.status(200).json({
-        challenges: [
-            {
-                title: "fwefew",
-                description: "ewfwqfqewgqew",
-                date: new Date()
-            }
-        ]
+    Challenge.find()
+    .then(challengeDocuments => {
+        res.status(200).json({
+            msg: challengeDocuments
+        })
+    })
+    .catch(error => {
+        res.status(400).json({
+            msg: ""
+        })
     })
 }
 
@@ -93,3 +95,7 @@ exports.generateCodes = (req, res, next) => {
             })
         })
 };
+
+/*exports.getUserChallenges = (req, res, next) => {
+
+}*/
