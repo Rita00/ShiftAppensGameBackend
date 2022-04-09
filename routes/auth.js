@@ -29,6 +29,14 @@ router.post(
       })
       .normalizeEmail(),
     body("password").trim().isLength({ min: 4, max: 16 }),
+    body("username")
+    .custom((value, {req}) => {
+      return User.findOne({username: value}).then((userDoc) => {
+        if (userDoc) {
+          return Promise.reject("Este username já existe");
+        }
+      })
+  }),
   ],
   authController.signup
 );

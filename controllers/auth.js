@@ -29,6 +29,7 @@ exports.signup = (req, res, next) => {
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
+
   bcrypt
     .hash(password, 12)
     .then((hashedPassword) => {
