@@ -7,7 +7,7 @@ exports.getChallenges = (req, res, next) => {
     Challenge.find()
     .then(challengeDocuments => {
         res.status(200).json({
-            msg: challengeDocuments
+            challenges: challengeDocuments
         })
     })
     .catch(error => {
@@ -77,7 +77,6 @@ exports.generateCodes = (req, res, next) => {
     Challenge.findOne({ _id: idChallenge})
         .then((challengeDocument) => {
             if (!challengeDocument) {
-                console.log("ERROUUU");
                 const error = new Error("Código inválido");
                 throw error;
             }
@@ -96,6 +95,6 @@ exports.generateCodes = (req, res, next) => {
         })
 };
 
-/*exports.getUserChallenges = (req, res, next) => {
-
-}*/
+exports.getUserChallenges = (req, res, next) => {
+    
+}
