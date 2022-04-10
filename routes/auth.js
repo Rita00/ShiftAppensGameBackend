@@ -12,7 +12,7 @@ router.post(
     //TODO complete validation (phone)
     body("email")
       .isEmail()
-      .withMessage("Please enter a valid email.")
+      .withMessage("Email inválido.")
       .custom((value, { req }) => {
         return User.findOne({ username: value }).then((userDoc) => {
           if (userDoc) {
@@ -26,8 +26,7 @@ router.post(
             return Promise.reject("Email já registado.");
           }
         });
-      })
-      .normalizeEmail(),
+      }),
     body("password").trim().isLength({ min: 4, max: 16 }),
     body("username")
     .custom((value, {req}) => {
