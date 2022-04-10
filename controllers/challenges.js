@@ -43,8 +43,8 @@ exports.createChallenge = (req, res, next) => {
 exports.validateCode = (req, res, next) => {
     const idChallenge = req.body.idChallenge;
     const code = req.body.code;
-    Challenge.findOne({ _id: idChallenge, availableCodes: { "$in": [code] } })
-    .select('availableCodes points').exec((error, challengeDocument) => {
+    Challenge.findOne({ _id: idChallenge, availableCodes: { "$in": [code] }, date: {"$lt": new Date()}})
+    .select('availableCodes points date').exec((error, challengeDocument) => {
         if (error) {
             res.status(400).json({
                 msg: ""
@@ -59,6 +59,7 @@ exports.validateCode = (req, res, next) => {
             })
             return;
         }
+
 
         User.findOne({ _id: req.userId, completedChallenges: { "$nin": [challengeDocument] } })
             .then(userDocument => {
