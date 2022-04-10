@@ -46,7 +46,7 @@ exports.getChallenges = (req, res, next) => {
                             return;
                         }
 
-                        if (!challengeDocument) {
+                        if (!challengeDocuments) {
                             const error = new Error("Código inválido");
                             res.status(400).json({
                                 msg: "Código inválido"
@@ -56,7 +56,6 @@ exports.getChallenges = (req, res, next) => {
 
                         res.status(200).json({
                             challenges: challengeDocuments,
-                            codes: challengeDocument.availableCodes
                         })
                         return
                     })
