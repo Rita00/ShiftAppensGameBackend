@@ -130,14 +130,23 @@ exports.generateCodes = (req, res, next) => {
                 res.status(403).json({
                     msg: "Código inválido"
                 })
+                return;
             }
             for (let i = 0; i < ncodes; i++) {
                 challengeDocument.availableCodes.push(uuidv4().substring(0, 8));
             }
-            challengeDocument.save();
-            res.status(201).json({
-                msg: "Códigos gerados com sucesso"
-            })
+            challengeDocument.save((error, challengeDocument) => {
+                if(error) {
+                    console.log(error)
+                    res.status(422).json({
+                        msg: "Falha ao gerar códigos"
+                    })
+                    return;
+                }
+                res.status(201).json({
+                    msg: "Códigos gerados com sucesso"
+                })
+            });  
         })
 };
 
