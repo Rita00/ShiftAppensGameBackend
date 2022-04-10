@@ -237,10 +237,18 @@ exports.createTextCode = (req, res, next) => {
             for (let i = 0; i < numTimes; i++) {
                 challengeDocument.availableCodes.push(textCode);
             }
-            challengeDocument.save();
-            res.status(201).json({
-                msg: "Código gerado com sucesso"
-            })
+            challengeDocument.save((error, challengeDocument) => {
+                if (error) {
+                    console.log(error)
+                    res.status(422).json({
+                        msg: "Falha ao gerar códigos"
+                    })
+                    return;
+                }
+                res.status(201).json({
+                    msg: "Códigos gerados com sucesso"
+                })
+            });
         })
 }
 
