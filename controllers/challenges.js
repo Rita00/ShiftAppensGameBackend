@@ -37,7 +37,7 @@ exports.getChallenges = (req, res, next) => {
             }
             if (userDocument.isAdmin) {
                 Challenge.find()
-                    .select('availableCodes')
+                    .select('availableCodes title description date points')
                     .exec((error, challengeDocument) => {
                         if (error) {
                             res.status(400).json({
