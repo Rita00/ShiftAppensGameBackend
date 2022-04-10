@@ -5,8 +5,16 @@ const { response } = require("express");
 const mongoose = require('mongoose');
 
 exports.getChallenges = (req, res, next) => {
-    Challenge.find()
+    const userID = req.userId;
+    if (!userID) {
+        Challenge.find()
         .then(challengeDocuments => {
+            if (!challengeDocuments) {
+                res.status(403).json({
+                    msg: "Desafio inválido"
+                })
+                return;
+            }
             res.status(200).json({
                 challenges: challengeDocuments
             })
@@ -15,6 +23,64 @@ exports.getChallenges = (req, res, next) => {
             res.status(400).json({
                 msg: ""
             })
+        })
+        return
+    }
+    
+    User.findById({ _id: userID })
+        .then(userDocument => {
+            if (!userDocument) {
+                res.status(403).json({
+                    msg: "Utilizador inválido"
+                })
+                return;
+            }
+            if (userDocument.isAdmin) {
+                Challenge.find()
+                    .select('availableCodes')
+                    .exec((error, challengeDocument) => {
+                        if (error) {
+                            res.status(400).json({
+                                msg: ""
+                            })
+                            return;
+                        }
+
+                        if (!challengeDocument) {
+                            const error = new Error("Código inválido");
+                            res.status(400).json({
+                                msg: "Código inválido"
+                            })
+                            return;
+                        }
+
+                        res.status(200).json({
+                            challenges: challengeDocuments,
+                            codes: challengeDocument.availableCodes
+                        })
+                        return
+                    })
+            } else {
+                Challenge.find()
+                    .then(challengeDocuments => {
+                        if (!challengeDocuments) {
+                            res.status(403).json({
+                                msg: "Desafio inválido"
+                            })
+                            return;
+                        }
+                        res.status(200).json({
+                            challenges: challengeDocuments
+                        })
+
+
+                    })
+                    .catch(error => {
+                        res.status(400).json({
+                            msg: ""
+                        })
+                    })
+            }
         })
 }
 
@@ -43,7 +109,7 @@ exports.createChallenge = (req, res, next) => {
         }
         res.status(201).json({
             msg: "Desafio criado",
-            challengeId: challengeDocument._id 
+            challengeId: challengeDocument._id
         })
     })
 
@@ -136,7 +202,7 @@ exports.generateCodes = (req, res, next) => {
                 challengeDocument.availableCodes.push(uuidv4().substring(0, 8));
             }
             challengeDocument.save((error, challengeDocument) => {
-                if(error) {
+                if (error) {
                     console.log(error)
                     res.status(422).json({
                         msg: "Falha ao gerar códigos"
@@ -146,7 +212,7 @@ exports.generateCodes = (req, res, next) => {
                 res.status(201).json({
                     msg: "Códigos gerados com sucesso"
                 })
-            });  
+            });
         })
 };
 
@@ -210,6 +276,29 @@ exports.getUserPoints = (req, res, next) => {
         .catch(error => {
             res.status(400).json({
                 msg: ""
+            })
+        })
+}
+
+exports.getChallengeCodes = (req, res, next) => {
+    const idChallenge = req.body.idChallenge;
+    Challenge.findOne({ _id: idChallenge })
+        .select('availableCodes')
+        .exec((error, challengeDocument) => {
+            if (error) {
+                res.status(400).json({
+                    msg: ""
+                })
+                return;
+            }
+            if (!challengeDocument) {
+                res.status(403).json({
+                    msg: "Código inválido"
+                })
+                return;
+            }
+            res.status(200).json({
+                codes: challengeDocument.availableCodes
             })
         })
 }
