@@ -33,11 +33,20 @@ exports.createChallenge = (req, res, next) => {
         date
     })
 
-    newChallenge.save()
-
-    res.status(201).json({
-        msg: "Desafio criado"
+    newChallenge.save((error, challengeDocument) => {
+        if(error) {
+            console.log(error)
+            res.status(422).json({
+                msg: "Inputs inválidos"
+            })
+            return;
+        }
+        res.status(201).json({
+            msg: "Desafio criado"
+        })
     })
+
+    
 }
 
 exports.validateCode = (req, res, next) => {
