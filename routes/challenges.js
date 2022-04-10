@@ -6,7 +6,7 @@ const isAuth = require('../middleware/is-auth');
 const router = express.Router();
 
 router.get('/', challengesController.getChallenges)
-router.post('/', challengesController.createChallenge)
+router.post('/', [isAuth, isAdmin], challengesController.createChallenge)
 router.post('/validate', [isAuth], challengesController.validateCode)
 router.post('/generate', [isAuth, isAdmin], challengesController.generateCodes)
 router.post('/createtextcode', [isAuth, isAdmin], challengesController.createTextCode)
