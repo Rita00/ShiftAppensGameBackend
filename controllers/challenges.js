@@ -34,7 +34,7 @@ exports.createChallenge = (req, res, next) => {
     })
 
     newChallenge.save((error, challengeDocument) => {
-        if(error) {
+        if (error) {
             console.log(error)
             res.status(422).json({
                 msg: "Inputs inválidos"
@@ -42,58 +42,76 @@ exports.createChallenge = (req, res, next) => {
             return;
         }
         res.status(201).json({
-            msg: "Desafio criado"
+            msg: "Desafio criado",
+            challengeId: challengeDocument._id 
         })
     })
 
-    
+
 }
 
 exports.validateCode = (req, res, next) => {
     const idChallenge = req.body.idChallenge;
     const code = req.body.code;
-    Challenge.findOne({ _id: idChallenge, availableCodes: { "$in": [code] }, date: {"$lt": new Date()}})
-    .select('availableCodes points date').exec((error, challengeDocument) => {
-        if (error) {
-            res.status(400).json({
-                msg: ""
-            })
-            return;
-        }
-
-        if (!challengeDocument) {
-            const error = new Error("Código inválido");
-            res.status(400).json({
-                msg: "Código inválido"
-            })
-            return;
-        }
-
-
-        User.findOne({ _id: req.userId, completedChallenges: { "$nin": [challengeDocument] } })
-            .then(userDocument => {
-                if (!userDocument) {
-                    const error = new Error("Ação inválida");
-                    throw error;
-                }
-                userDocument.completedChallenges.push(challengeDocument);
-                console.log(userDocument)
-                console.log(challengeDocument)
-                userDocument.totalPoints += challengeDocument.points;
-                console.log(userDocument)
-                challengeDocument.availableCodes.pull(code)
-                challengeDocument.save();
-                userDocument.save();
-                res.status(201).json({
-                    msg: "Desafio concluído"
+    Challenge.findOne({ _id: idChallenge, availableCodes: { "$in": [code] }, date: { "$lt": new Date() } })
+        .select('availableCodes points date').exec((error, challengeDocument) => {
+            if (error) {
+                res.status(400).json({
+                    msg: ""
                 })
-            }).catch(error => {
-                res.status(403).json({
-                    msg: "Ação inválida"
-                })
-            });
+                return;
+            }
 
-    })
+            if (!challengeDocument) {
+                const error = new Error("Código inválido");
+                res.status(400).json({
+                    msg: "Código inválido"
+                })
+                return;
+            }
+
+
+            User.findOne({ _id: req.userId, completedChallenges: { "$nin": [challengeDocument] } })
+                .then(userDocument => {
+                    if (!userDocument) {
+                        const error = new Error("Ação inválida");
+                        throw error;
+                    }
+                    userDocument.completedChallenges.push(challengeDocument);
+                    console.log(userDocument)
+                    console.log(challengeDocument)
+                    userDocument.totalPoints += challengeDocument.points;
+                    console.log(userDocument)
+                    challengeDocument.availableCodes.pull(code)
+                    challengeDocument.save((error, challengeDocument) => {
+                        if (error) {
+                            console.log(error)
+                            res.status(422).json({
+                                msg: "Inputs inválidos"
+                            })
+                            return;
+                        }
+                        userDocument.save((error, userDocument) => {
+                            if (error) {
+                                console.log(error)
+                                res.status(422).json({
+                                    msg: "Falha ao atualizar pontos"
+                                })
+                                return;
+                            }
+                            res.status(201).json({
+                                msg: "Desafio concluído"
+                            })
+                        });
+                    });
+
+                }).catch(error => {
+                    res.status(403).json({
+                        msg: "Ação inválida"
+                    })
+                });
+
+        })
 };
 
 exports.generateCodes = (req, res, next) => {
@@ -127,28 +145,28 @@ exports.createTextCode = (req, res, next) => {
     const idChallenge = req.body.idChallenge;
     const textCode = req.body.textCode;
     const numTimes = req.body.numTimes;
-    Challenge.findOne({_id: idChallenge})
-    .select('availableCodes')
-    .exec((error, challengeDocument) => {
-        if (error) {
-            res.status(400).json({
-                msg: ""
+    Challenge.findOne({ _id: idChallenge })
+        .select('availableCodes')
+        .exec((error, challengeDocument) => {
+            if (error) {
+                res.status(400).json({
+                    msg: ""
+                })
+                return;
+            }
+            if (!challengeDocument) {
+                res.status(403).json({
+                    msg: "Código inválido"
+                })
+            }
+            for (let i = 0; i < numTimes; i++) {
+                challengeDocument.availableCodes.push(textCode);
+            }
+            challengeDocument.save();
+            res.status(201).json({
+                msg: "Código gerado com sucesso"
             })
-            return;
-        }
-        if (!challengeDocument) {
-            res.status(403).json({
-                msg: "Código inválido"
-            })
-        }
-        for (let i = 0; i < numTimes; i++) {
-            challengeDocument.availableCodes.push(textCode);
-        }
-        challengeDocument.save();
-        res.status(201).json({
-            msg: "Código gerado com sucesso"
         })
-    })
 }
 
 exports.getUserChallenges = (req, res, next) => {
@@ -175,7 +193,7 @@ exports.getUserPoints = (req, res, next) => {
     const userID = req.userId;
     User.findById({ _id: userID })
         .then(userDocument => {
-            
+
             res.status(200).json({
                 userPoints: userDocument.totalPoints
             })
